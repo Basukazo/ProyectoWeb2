@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "./AuthContext.jsx";
 
 const DataContext = createContext();
 export const useData = () => useContext(DataContext);

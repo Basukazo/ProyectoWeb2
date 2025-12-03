@@ -1,33 +1,65 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-function App() {
-  const [count, setCount] = useState(0)
-  const rutas = [
-      { id: 1, nombre: "Ruta 1", horario: "6:00 am - 7:00 pm" },
-      { id: 2, nombre: "Ruta 2", horario: "5:30 am - 8:00 pm" },
-      { id: 3, nombre: "Ruta 3", horario: "6:15 am - 8:30 pm" },
-    ];
+// Pages
+import Home from "./pages/Home";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import TripsList from "./pages/TripsList";
+import TripForm from "./pages/TripForm";
+import DriversList from "./pages/DriversList";
+import DriverForm from "./pages/DriverForm";
+import Profile from "./pages/Profile";
+import PublicSearch from "./pages/PublicSearch";
+import NotFound from "./pages/NotFound";
 
+// Context
+import { AuthProvider } from "./context/AuthContext.jsx";
+import { DataProvider } from "./context/DataContext";
+
+export default function App() {
   return (
-    <div className="container mt-4">
-      <h2>Rutas Disponibles</h2>
-      <div className="row">
-        {rutas.map((r) => (
-          <div key={r.id} className="col-md-4 mb-3">
-            <div className="card">
-              <div className="card-body">
-                <h5>{r.nombre}</h5>
-                <p>Horario: {r.horario}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+    <AuthProvider>
+      <DataProvider>
+        <BrowserRouter>
+          <Navbar />
+
+          <Routes>
+
+            {/* Público */}
+            <Route path="/" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/search" element={<PublicSearch />} />
+
+            {/* Dashboard protegido */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            >
+              {/* Subrutas del dashboard */}
+              <Route index element={<TripsList />} />
+              <Route path="trips/new" element={<TripForm />} />
+              <Route path="trips/:id/edit" element={<TripForm />} />
+
+              <Route path="drivers" element={<DriversList />} />
+              <Route path="drivers/new" element={<DriverForm />} />
+              <Route path="drivers/:id/edit" element={<DriverForm />} />
+
+              <Route path="profile" element={<Profile />} />
+            </Route>
+
+            {/* 404 */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </DataProvider>
+    </AuthProvider>
   );
 }
-
-export default App
