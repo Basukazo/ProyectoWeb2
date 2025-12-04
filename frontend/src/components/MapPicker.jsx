@@ -1,17 +1,30 @@
 import { useState, useEffect } from "react";
 import L from "leaflet";
-
 import "leaflet/dist/leaflet.css";
 
-export default function MapPicker({ onLocationSelected }) {
+export default function MapPicker({ onLocationSelected, mapId }) {
   const [map, setMap] = useState(null);
   const [marker, setMarker] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
   const [query, setQuery] = useState("");
 
   useEffect(() => {
-    // Inicializar mapa
-    const mapInstance = L.map("map").setView([9.93, -84.08], 13); // San José CR
+    if (!mapId) {
+      console.error("MapPicker necesita un mapId único");
+      return;
+    }
+
+    console.log("Inicializando mapa en:", mapId);
+
+    const div = document.getElementById(mapId);
+    console.log("DIV encontrado:", div);
+
+    if (!div) {
+      console.error("ERROR: No existe el contenedor del mapa:", mapId);
+      return;
+    }
+
+    const mapInstance = L.map(mapId).setView([9.93, -84.08], 13);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "&copy; OpenStreetMap contributors",
@@ -19,10 +32,11 @@ export default function MapPicker({ onLocationSelected }) {
 
     setMap(mapInstance);
 
-    return () => mapInstance.remove();
-  }, []);
+    return () => {
+      mapInstance.remove();
+    };
+  }, [mapId]);
 
-  // Manejar click en el mapa
   useEffect(() => {
     if (!map) return;
 
@@ -36,11 +50,17 @@ export default function MapPicker({ onLocationSelected }) {
         setMarker(newMarker);
       }
 
-      onLocationSelected({ lat, lng, address: "Punto seleccionado en el mapa" });
+              const newAddress = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+        setQuery(newAddress);   // <- esto hace que se muestre en el input
+
+        onLocationSelected({
+          lat,
+          lng,
+          address: newAddress
+        });
     });
   }, [map, marker]);
 
-  // Búsqueda con Nominatim API
   const handleSearch = async () => {
     if (!query) return;
 
@@ -51,12 +71,11 @@ export default function MapPicker({ onLocationSelected }) {
     setSearchResults(data);
   };
 
-  // Seleccionar resultado de autocompletar
   const selectLocation = (place) => {
     const lat = parseFloat(place.lat);
     const lng = parseFloat(place.lon);
 
-    map.setView([lat, lng], 16);
+    map.setView([lat, lng], 15);
 
     if (marker) {
       marker.setLatLng([lat, lng]);
@@ -103,7 +122,16 @@ export default function MapPicker({ onLocationSelected }) {
         </ul>
       )}
 
-      <div id="map" style={{ height: "300px", width: "100%" }}></div>
+      <div
+        id={mapId}
+        style={{
+          width: "100%",
+          height: "300px",
+          minHeight: "300px",
+          backgroundColor: "#333",
+          borderRadius: "8px",
+        }}
+      ></div>
     </div>
   );
 }

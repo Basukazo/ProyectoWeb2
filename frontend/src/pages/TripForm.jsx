@@ -3,10 +3,12 @@ import MapPicker from "../components/MapPicker";
 import { useNavigate, useParams } from "react-router-dom";
 import { useData } from "../context/DataContext";
 
+
 export default function TripForm() {
+  
   const navigate = useNavigate();
   const { id } = useParams();
-  const { trips, addTrip, updateTrip } = useData();
+  const { trips, addTrip, updateTrip, drivers} = useData();
 
   const editing = Boolean(id);
   const tripToEdit = editing ? trips.find((t) => t.id === id) : null;
@@ -52,27 +54,36 @@ export default function TripForm() {
 
       <div className="mb-3">
         <label className="form-label">Chofer:</label>
-        <input
+        <select
           name="driver"
           className="form-control"
           value={form.driver}
           onChange={updateField}
-        />
+        >
+          <option value="">Seleccione un chofer</option>
+
+          {drivers.map((d) => (
+            <option key={d.id} value={d.name}>
+              {d.name} — {d.phone}
+            </option>
+          ))}
+        </select>
       </div>
 
       <h5>Origen</h5>
-      <MapPicker
-        onLocationSelected={(loc) =>
-          setForm({ ...form, origin: loc })
-        }
-      />
-
+<MapPicker
+  mapId="trip-origin-map"
+  onLocationSelected={(loc) =>
+    setForm({ ...form, origin: loc })
+  }
+/>
       <h5 className="mt-4">Destino</h5>
-      <MapPicker
-        onLocationSelected={(loc) =>
-          setForm({ ...form, destination: loc })
-        }
-      />
+<MapPicker
+  mapId="trip-destination-map"
+  onLocationSelected={(loc) =>
+    setForm({ ...form, destination: loc })
+  }
+/>
 
       <button className="btn btn-primary mt-3" onClick={save}>
         Guardar

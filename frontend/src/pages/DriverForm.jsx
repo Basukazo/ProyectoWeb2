@@ -50,11 +50,12 @@ export default function DriverForm() {
       </div>
 
       <h5>Ubicación del chofer (opcional)</h5>
-      <MapPicker
-        onLocationSelected={(loc) =>
-          setForm({ ...form, location: loc })
-        }
-      />
+          <MapPicker
+      mapId="driver-location-map"
+      onLocationSelected={(loc) =>
+        setForm({ ...form, location: loc })
+      }
+    />
 
       <button className="btn btn-primary mt-3" onClick={save}>
         Guardar

@@ -15,10 +15,10 @@ export default function PublicSearch() {
       <h2>Búsqueda de Choferes</h2>
 
       <h5>Origen</h5>
-      <MapPicker onLocationSelected={setOrigin} />
+      <MapPicker mapId="origin-map" onLocationSelected={setOrigin} />
 
       <h5 className="mt-4">Destino</h5>
-      <MapPicker onLocationSelected={setDestination} />
+      <MapPicker mapId="destination-map" onLocationSelected={setDestination} />
 
       <hr />
 

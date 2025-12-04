@@ -1,6 +1,12 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+// Components
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
+
+// Context
+import { AuthProvider } from "./context/AuthContext";
+import { DataProvider } from "./context/DataContext";
 
 // Pages
 import Home from "./pages/Home";
@@ -15,20 +21,18 @@ import Profile from "./pages/Profile";
 import PublicSearch from "./pages/PublicSearch";
 import NotFound from "./pages/NotFound";
 
-// Context
-import { AuthProvider } from "./context/AuthContext.jsx";
-import { DataProvider } from "./context/DataContext";
-
 export default function App() {
   return (
     <AuthProvider>
       <DataProvider>
         <BrowserRouter>
+
+          {/* Navbar visible siempre */}
           <Navbar />
 
           <Routes>
 
-            {/* Público */}
+            {/* Rutas públicas */}
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
@@ -43,21 +47,27 @@ export default function App() {
                 </ProtectedRoute>
               }
             >
-              {/* Subrutas del dashboard */}
+
+              {/* Subrutas del Dashboard */}
               <Route index element={<TripsList />} />
+
+              {/* Viajes */}
               <Route path="trips/new" element={<TripForm />} />
               <Route path="trips/:id/edit" element={<TripForm />} />
 
+              {/* Choferes */}
               <Route path="drivers" element={<DriversList />} />
               <Route path="drivers/new" element={<DriverForm />} />
               <Route path="drivers/:id/edit" element={<DriverForm />} />
 
+              {/* Perfil */}
               <Route path="profile" element={<Profile />} />
             </Route>
 
-            {/* 404 */}
+            {/* Página 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+
         </BrowserRouter>
       </DataProvider>
     </AuthProvider>
